@@ -29,7 +29,6 @@ namespace EPlikt.Controllers
                 Title = new TextSyndicationContent("Innehåll på Chalmers"),
                 Description = new TextSyndicationContent("Denna feed innehåller data från Chalmers som berörs utav den nya E-Pliktslagen.")
             };
-
             
             // Create a new  XmlDocument in order to modify the root element
             // http://stackoverflow.com/questions/14397392/overwriting-root-element-in-syndicationfeed-adding-namespaces-to-root-element
@@ -62,9 +61,6 @@ namespace EPlikt.Controllers
         private static List<SyndicationItem> GetSyndicationItems()
         {
             var ret = new List<SyndicationItem>();
-
-            // Retrieve items from Solr and return as feed items
-
 
             ret.Add(new SyndicationItem("TestTitle1", "TestContent1", new Uri("http://www.google.com")));
             ret.Add(new SyndicationItem("TestTitle2", "TestContent2", new Uri("http://www.google.com")));
