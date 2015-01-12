@@ -12,6 +12,8 @@ using System.Xml;
 using System.Xml.Linq;
 using System.IO;
 using System.Text;
+using Newtonsoft.Json.Linq;
+using System.Collections;
 
 namespace EPlikt.Controllers
 {
@@ -64,15 +66,31 @@ namespace EPlikt.Controllers
             var ret = new List<SyndicationItem>();
 
             // Retrieve items from Solr and return as feed items
+            var records = GetAllRecords();
 
-
-            ret.Add(new SyndicationItem("TestTitle1", "TestContent1", new Uri("http://www.google.com")));
-            ret.Add(new SyndicationItem("TestTitle2", "TestContent2", new Uri("http://www.google.com")));
-            ret.Add(new SyndicationItem("TestTitle3", "TestContent3", new Uri("http://www.google.com")));
+            foreach (var doc in records.response.docs)
+            {
+                var si = new SyndicationItem(
+                    (String)doc.title,
+                    (String)doc["abstract"],
+                    new Uri("http://www.google.se")
+                );
+                ret.Add(si);
+            }
 
             return ret;
         }
-    }
 
-    
+        private static dynamic GetAllRecords()
+        {
+            HttpWebRequest fileReq = (HttpWebRequest)HttpWebRequest.Create("http://cpltest.lib.chalmers.se:8080/solr/cpl_plikt/select?q=*:*&wt=json");
+            fileReq.CookieContainer = new CookieContainer();
+            fileReq.AllowAutoRedirect = true;
+            HttpWebResponse fileResp = (HttpWebResponse)fileReq.GetResponse();
+            var outputStream = fileResp.GetResponseStream();
+
+            var sr = new StreamReader(outputStream);
+            return JsonConvert.DeserializeObject(sr.ReadToEnd());
+        }
+    }
 }
