@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("EPlikt")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Skapa en RSS feed med material som skall tillgängliggöras enligt lagen om E-plikt.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Chalmers Library")]
 [assembly: AssemblyProduct("EPlikt")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyCopyright("Copyright © 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

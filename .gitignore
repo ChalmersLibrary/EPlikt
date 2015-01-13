@@ -191,3 +191,5 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
+
+EPlikt/App_Data/Logs
