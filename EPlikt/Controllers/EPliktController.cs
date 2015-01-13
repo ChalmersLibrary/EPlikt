@@ -48,7 +48,7 @@ namespace EPlikt.Controllers
             xmlDoc.DocumentElement.SetAttribute("xmlns:georss", "http://www.georss.org/georss");
             xmlDoc.DocumentElement.SetAttribute("xmlns:media", "http://search.yahoo.com/mrss/");
             xmlDoc.DocumentElement.SetAttribute("xmlns:dcterms", "http://purl.org/dc/terms/");
-
+           
             var output = new StringWriter();
             var writer = new XmlTextWriter(output);
 
@@ -68,13 +68,21 @@ namespace EPlikt.Controllers
             // Retrieve items from Solr and return as feed items
             var records = GetAllRecords();
 
+            XNamespace dcterms = XNamespace.Get("http://purl.org/dc/terms/"); 
+
             foreach (var doc in records.response.docs)
             {
                 var si = new SyndicationItem(
                     (String)doc.title,
                     (String)doc["abstract"],
-                    new Uri("http://www.google.se")
+                    new Uri((String)doc.url)
                 );
+
+                si.Id = doc.url;
+                si.PublishDate = doc.pubdate;
+
+                si.ElementExtensions.Add(new XElement(dcterms + "accessRights", String.Empty, "Gratis"));
+                
                 ret.Add(si);
             }
 
