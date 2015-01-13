@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -17,22 +18,38 @@ namespace EPlikt.Feed
 
             var records = GetAllRecords();
 
+            // Static variables (defaults)
+            string publisher = "http://id.kb.se/organisations/SE5564795598";
+            string free = "Gratis";
+
             foreach (var doc in records.response.docs)
             {
                 var item = new EPliktFeedItem();
+                item.Guid = (String)doc["url"];
                 item.Title = (String)doc.title;
                 item.Abstract = (String)doc["abstract"];
+                item.Link = (String)doc["url"];
+                item.PubDate = (String)doc["pubdate_rfc822"];
+                item.Publisher = publisher;
+                item.AccessRights = free;
+                item.ContentType = (String)doc["mimetype"];
+                item.MD5 = (String)doc["md5sum"];
+                List<string> creators = doc["person_normal"].ToObject<List<string>>();
+                item.Creator = creators;
+                
                 content.Items.Add(item);
-
-                // TODO: Fill in more data.
             }
 
+            
+            
             return content;
         }
 
         private static dynamic GetAllRecords()
         {
-            HttpWebRequest fileReq = (HttpWebRequest)HttpWebRequest.Create("http://cpltest.lib.chalmers.se:8080/solr/cpl_plikt/select?q=*:*&wt=json");
+            string SolrUrl = ConfigurationManager.AppSettings["SolrUrl"].ToString();
+
+            HttpWebRequest fileReq = (HttpWebRequest)HttpWebRequest.Create(SolrUrl + "select?q=*:*&wt=json&rows=9999");
             fileReq.CookieContainer = new CookieContainer();
             fileReq.AllowAutoRedirect = true;
             HttpWebResponse fileResp = (HttpWebResponse)fileReq.GetResponse();
@@ -42,4 +59,6 @@ namespace EPlikt.Feed
             return JsonConvert.DeserializeObject(sr.ReadToEnd());
         }
     }
+
+    
 }
