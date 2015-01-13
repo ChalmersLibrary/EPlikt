@@ -193,3 +193,5 @@ FakesAssemblies/
 *.opt
 
 EPlikt/App_Data/Logs
+/EPlikt/WebForm1.aspx
+/EPlikt/WebForm1.aspx.cs
