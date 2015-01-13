@@ -39,29 +39,49 @@ namespace EPlikt.Feed
 
             foreach (var item in content.Items)
             {
+                // Clean potentially invalid XML chars in applicable fields
+                string cleanTitle = CleanInvalidXmlChars(item.Title);
+                
                 // Fields that should never be NULL or repeated
                 var rss_item = new XElement("item",
                         new XElement("guid", item.Guid),
                         new XElement("pubDate", item.PubDate),
-                        new XElement("title", item.Title),
+                        new XElement("title", cleanTitle),
+                        new XElement("link", item.Link),
+                        new XElement("category", item.Category),
                         new XElement(dcterms + "publisher", item.Publisher),
                         new XElement(dcterms + "format", item.ContentType),
-                        new XElement(dcterms + "MD5", item.MD5) 
+                        new XElement(dcterms + "MD5", item.MD5),
+                        new XElement(dcterms + "accessRights", item.AccessRights)
                         );
 
                 // Repeatable field(s)
                 foreach (string creator in item.Creator)
                 {
                     string cleanCreator = CleanInvalidXmlChars(creator);
-                    rss_item.Add(new XElement(dcterms + "creator", cleanCreator));
+                    // split name and role
+                    string sCreator = cleanCreator.Replace(":", " (");
+                    string goodCreator = sCreator + ")";
+                    rss_item.Add(new XElement(dcterms + "creator", goodCreator));
                 }
 
-                // CDATA fields that could be null
+                // Fields that could be null
                 if (!string.IsNullOrEmpty(item.Abstract))
                 {
                     // remove invalid XML characters
                     string cleanAbstract = CleanInvalidXmlChars(item.Abstract);
                     rss_item.Add(new XElement("description", new XCData(cleanAbstract)));
+                }
+                else
+                {
+                    // do nothing
+                }
+
+                if (!string.IsNullOrEmpty(item.Keywords))
+                {
+                    // remove invalid XML characters
+                    string cleanKeywords = CleanInvalidXmlChars(item.Keywords);
+                    rss_item.Add(new XElement(media + "keywords", cleanKeywords));
                 }
                 else
                 {

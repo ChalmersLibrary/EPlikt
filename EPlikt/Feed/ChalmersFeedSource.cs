@@ -28,13 +28,15 @@ namespace EPlikt.Feed
                 item.Guid = (String)doc["url"];
                 item.Title = (String)doc.title;
                 item.Abstract = (String)doc["abstract"];
+                item.Keywords = (String)doc["keywords"];
+                item.Category = (String)doc["pubtype"];
                 item.Link = (String)doc["url"];
                 item.PubDate = (String)doc["pubdate_rfc822"];
                 item.Publisher = publisher;
                 item.AccessRights = free;
                 item.ContentType = (String)doc["mimetype"];
                 item.MD5 = (String)doc["md5sum"];
-                List<string> creators = doc["person_normal"].ToObject<List<string>>();
+                List<string> creators = doc["person_role_mapping"].ToObject<List<string>>();
                 item.Creator = creators;
                 
                 content.Items.Add(item);
