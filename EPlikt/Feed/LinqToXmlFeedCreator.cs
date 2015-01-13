@@ -20,18 +20,18 @@ namespace EPlikt.Feed
             XNamespace dcterms = "http://purl.org/dc/terms/";
 
             var channel = new XElement("channel",
-                new XElement("title", "Chalmers Tekniska Högskola - Pliktleverans av elektroniskt material"),
+                new XElement("title", "Chalmers tekniska högskola - Pliktleverans av elektroniskt material"),
                 new XElement("link", ""),
                 new XElement("language", "sv"),
-                new XElement("copyright", "Chalmers Tekniska Högskola 2015"),
-                new XElement("description", "Material från Chalmers Tekniska Högskola som faller under EPliktslagen."),
+                new XElement("copyright", "Chalmers tekniska högskola 2015"),
+                new XElement("description", "Material från Chalmers tekniska högskola som faller under EPliktslagen."),
                 new XElement("image",
-                    new XElement("title", "Chalmers Tekniska Högskola"),
-                    new XElement("url", ""),
-                    new XElement("link", ""),
-                    new XElement("width", ""),
-                    new XElement("height", ""),
-                    new XElement("description", "MISSING IMAGE!")
+                    new XElement("title", "Chalmers tekniska högskola"),
+                    new XElement("url", "http://www.chalmers.se/SiteCollectionImages/Logotyper/Chalmers%20logotyp/AvancezChalmers_black_centered.png"),
+                    new XElement("link", "http://www.chalmers.se/"),
+                    new XElement("width", "160"),
+                    new XElement("height", "182"),
+                    new XElement("description", "Chalmers tekniska högskolas logotyp.")
                 )
             );
 
