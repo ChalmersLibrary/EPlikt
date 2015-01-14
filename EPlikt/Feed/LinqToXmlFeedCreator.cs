@@ -22,17 +22,17 @@ namespace EPlikt.Feed
             XNamespace dcterms = ConfigurationManager.AppSettings["DCtermsNs"].ToString();
 
             var channel = new XElement("channel",
-                new XElement("title", "Chalmers Tekniska Högskola - Pliktleverans av elektroniskt material"),
+                new XElement("title", "Chalmers tekniska högskola - Pliktleverans av elektroniskt material"),
                 new XElement("link", ""),
                 new XElement("language", "sv"),
-                new XElement("copyright", "Chalmers Tekniska Högskola 2015-"),
-                new XElement("description", "Material från Chalmers Tekniska Högskola som faller under lagen om leveransplikt för elektroniskt material."),
+                new XElement("copyright", "Chalmers tekniska högskola 2015-"),
+                new XElement("description", "Material från Chalmers tekniska högskola som faller under lagen om leveransplikt för elektroniskt material."),
                 new XElement("image",
-                    new XElement("title", "Chalmers Tekniska Högskola"),
+                    new XElement("title", "Chalmers tekniska högskola"),
                     new XElement("url", "http://publications.lib.chalmers.se/local/img/chalmers_bldmrk.jpg"),
                     new XElement("link", "http://www.chalmers.se"),
-                    new XElement("width", ""),
-                    new XElement("height", ""),
+                    new XElement("width", "86"),
+                    new XElement("height", "81"),
                     new XElement("description", "Chalmers tekniska högskola")
                 )
             );
