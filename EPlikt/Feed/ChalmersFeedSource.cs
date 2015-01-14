@@ -20,7 +20,7 @@ namespace EPlikt.Feed
 
             // Static variables (defaults)
             string publisher = "http://id.kb.se/organisations/SE5564795598";
-            string free = "Gratis";
+            string free = "gratis";
 
             foreach (var doc in records.response.docs)
             {

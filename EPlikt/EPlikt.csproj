@@ -133,7 +133,9 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Content Include="Global.asax" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -150,6 +152,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\log4net.config" />
+    <None Include="Properties\PublishProfiles\ctheplikt - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\ctheplikt - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\ctheplikt.pubxml" />
   </ItemGroup>
   <PropertyGroup>

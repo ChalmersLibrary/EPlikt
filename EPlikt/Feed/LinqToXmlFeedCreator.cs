@@ -23,16 +23,16 @@ namespace EPlikt.Feed
 
             var channel = new XElement("channel",
                 new XElement("title", "Chalmers Tekniska Högskola - Pliktleverans av elektroniskt material"),
-                new XElement("link", ""),
+                new XElement("link", "http://ctheplikt.azurewebsites.net/Api/EPlikt/"),
                 new XElement("language", "sv"),
                 new XElement("copyright", "Chalmers Tekniska Högskola 2015-"),
                 new XElement("description", "Material från Chalmers Tekniska Högskola som faller under lagen om leveransplikt för elektroniskt material."),
                 new XElement("image",
-                    new XElement("title", "Chalmers Tekniska Högskola"),
+                    new XElement("title", "Chalmers Tekniska Högskola - Pliktleverans av elektroniskt material"),
                     new XElement("url", "http://publications.lib.chalmers.se/local/img/chalmers_bldmrk.jpg"),
-                    new XElement("link", "http://www.chalmers.se"),
-                    new XElement("width", ""),
-                    new XElement("height", ""),
+                    new XElement("link", "http://ctheplikt.azurewebsites.net/Api/EPlikt/"),
+                    new XElement("width", "86"),
+                    new XElement("height", "81"),
                     new XElement("description", "Chalmers tekniska högskola")
                 )
             );
@@ -41,17 +41,20 @@ namespace EPlikt.Feed
             {
                 // Clean potentially invalid XML chars in applicable fields
                 string cleanTitle = CleanInvalidXmlChars(item.Title);
+
+                // Correct capitalization of pubDate
+                string pubdateUc = UppercaseFirstEach(item.PubDate);
                 
                 // Fields that should never be NULL or repeated
                 var rss_item = new XElement("item",
                         new XElement("guid", item.Guid),
-                        new XElement("pubDate", item.PubDate),
+                        new XElement("pubDate", pubdateUc),
                         new XElement("title", cleanTitle),
                         new XElement("link", item.Link),
                         new XElement("category", item.Category),
                         new XElement(dcterms + "publisher", item.Publisher),
                         new XElement(dcterms + "format", item.ContentType),
-                        new XElement(dcterms + "MD5", item.MD5),
+                        //new XElement(dcterms + "MD5", item.MD5),
                         new XElement(dcterms + "accessRights", item.AccessRights)
                         );
 
@@ -124,6 +127,19 @@ namespace EPlikt.Feed
         {
             string re = @"[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD\x10000-x10FFFF]";
             return Regex.Replace(text, re, "");
+        }
+
+        public string UppercaseFirstEach(string s)
+        {
+            char[] a = s.ToLower().ToCharArray();
+
+            for (int i = 0; i < a.Count(); i++)
+            {
+                a[i] = i == 0 || a[i - 1] == ' ' ? char.ToUpper(a[i]) : a[i];
+
+            }
+
+            return new string(a);
         }
     }
 }
