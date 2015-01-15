@@ -5,6 +5,9 @@ using System.Web;
 
 namespace EPlikt.Feed
 {
+    /// <summary>
+    /// Handles the feed source management of a feed creator.
+    /// </summary>
     public abstract class FeedCreatorBase : IFeedCreator
     {
         protected IFeedSource feedSource;

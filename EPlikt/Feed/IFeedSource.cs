@@ -7,8 +7,15 @@ using EPlikt.Models;
 
 namespace EPlikt.Feed
 {
+    /// <summary>
+    /// A source to a feed which handles e-plikt specific content.
+    /// </summary>
     public interface IFeedSource
     {
+        /// <summary>
+        /// Retrieves the content and exposes it through an e-plikt specific model. 
+        /// </summary>
+        /// <returns>The populated feed content model.</returns>
         EPliktFeedContent GetContent();
     }
 }

@@ -7,6 +7,10 @@ using System.Xml.Linq;
 
 namespace EPlikt.Feed
 {
+    /// <summary>
+    /// Holds e-plikt protocol specific data. 
+    /// http://www.kb.se/namespace/digark/deliveryspecification/deposit/rssfeeds/rssfeeds.pdf
+    /// </summary>
     public abstract class EPliktFeedCreator : FeedCreatorBase
     {
         protected const string xmlVersion = "1.0";

@@ -160,6 +160,7 @@
     <None Include="Properties\PublishProfiles\ctheplikt - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\ctheplikt - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\ctheplikt.pubxml" />
+    <None Include="Properties\PublishProfiles\heyman.pubxml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
