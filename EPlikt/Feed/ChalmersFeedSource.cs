@@ -26,13 +26,13 @@ namespace EPlikt.Feed
         private void FillInDataAboutFeed(EPliktFeedContent feed)
         {
             feed.Title = "Chalmers Tekniska Högskola - Pliktleverans av elektroniskt material";
-            feed.Link = "http://ctheplikt.azurewebsites.net/Api/EPlikt/";
+            feed.Link = "http://feeds.lib.chalmers.se/api/eplikt/";
             feed.Language = "sv";
             feed.Copyright = "Chalmers Tekniska Högskola 2015-";
             feed.Description = "Material från Chalmers Tekniska Högskola som faller under lagen om leveransplikt för elektroniskt material.";
             feed.Image.Title = "Chalmers Tekniska Högskola - Pliktleverans av elektroniskt material";
             feed.Image.Url = "http://publications.lib.chalmers.se/local/img/chalmers_bldmrk.jpg";
-            feed.Image.Link = "http://ctheplikt.azurewebsites.net/Api/EPlikt/";
+            feed.Image.Link = "http://feeds.lib.chalmers.se/api/eplikt/";
             feed.Image.Width = "86";
             feed.Image.Height = "81";
             feed.Image.Description = "Chalmers tekniska högskola";
