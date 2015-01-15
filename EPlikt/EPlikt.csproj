@@ -116,6 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\EPliktController.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Feed\ChalmersFeedSource.cs" />
     <Compile Include="Feed\FeedCreatorBase.cs" />
     <Compile Include="Feed\IFeedCreator.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="IO\Utf8StringWriter.cs" />
     <Compile Include="Models\EPliktFeedContent.cs" />
     <Compile Include="Models\EPliktFeedItem.cs" />
     <Compile Include="Models\FeedImage.cs" />

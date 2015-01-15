@@ -17,6 +17,7 @@ namespace EPlikt.Models
 
         public EPliktFeedContent()
         {
+            Image = new FeedImage();
             Items = new List<EPliktFeedItem>();
         }
     }

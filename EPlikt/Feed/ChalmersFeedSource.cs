@@ -12,31 +12,37 @@ namespace EPlikt.Feed
 {
     public class ChalmersFeedSource : IFeedSource
     {
+        public const string publisher = "http://id.kb.se/organisations/SE5564795598";
+        public const string free = "gratis";
+
         public EPliktFeedContent GetContent()
         {
             var content = new EPliktFeedContent();
 
-            var records = GetAllRecords();
+            FillInDataAboutFeed(content);
 
-            // Static variables (defaults)
-            string publisher = "http://id.kb.se/organisations/SE5564795598";
-            string free = "gratis";
+            FillInDataForFeedItems(content, GetAllRecords());
 
-            content.Title = "Chalmers Tekniska Högskola - Pliktleverans av elektroniskt material";
-            content.Link = "http://ctheplikt.azurewebsites.net/Api/EPlikt/";
-            content.Language = "sv";
-            content.Copyright = "Chalmers Tekniska Högskola 2015-";
-            content.Description = "Material från Chalmers Tekniska Högskola som faller under lagen om leveransplikt för elektroniskt material.";
+            return content;
+        }
 
-            var feedImage = new FeedImage();
-            feedImage.Title = "Chalmers Tekniska Högskola - Pliktleverans av elektroniskt material";
-            feedImage.Url = "http://publications.lib.chalmers.se/local/img/chalmers_bldmrk.jpg";
-            feedImage.Link = "http://ctheplikt.azurewebsites.net/Api/EPlikt/";
-            feedImage.Width = "86";
-            feedImage.Height = "81";
-            feedImage.Description = "Chalmers tekniska högskola";
-            content.Image = feedImage;
+        private void FillInDataAboutFeed(EPliktFeedContent feed)
+        {
+            feed.Title = "Chalmers Tekniska Högskola - Pliktleverans av elektroniskt material";
+            feed.Link = "http://ctheplikt.azurewebsites.net/Api/EPlikt/";
+            feed.Language = "sv";
+            feed.Copyright = "Chalmers Tekniska Högskola 2015-";
+            feed.Description = "Material från Chalmers Tekniska Högskola som faller under lagen om leveransplikt för elektroniskt material.";
+            feed.Image.Title = "Chalmers Tekniska Högskola - Pliktleverans av elektroniskt material";
+            feed.Image.Url = "http://publications.lib.chalmers.se/local/img/chalmers_bldmrk.jpg";
+            feed.Image.Link = "http://ctheplikt.azurewebsites.net/Api/EPlikt/";
+            feed.Image.Width = "86";
+            feed.Image.Height = "81";
+            feed.Image.Description = "Chalmers tekniska högskola";
+        }
 
+        private void FillInDataForFeedItems(EPliktFeedContent feed, dynamic records)
+        {
             foreach (var doc in records.response.docs)
             {
                 var item = new EPliktFeedItem();
@@ -53,16 +59,12 @@ namespace EPlikt.Feed
                 item.MD5 = (String)doc["md5sum"];
                 List<string> creators = doc["person_role_mapping"].ToObject<List<string>>();
                 item.Creator = creators;
-                
-                content.Items.Add(item);
-            }
 
-            
-            
-            return content;
+                feed.Items.Add(item);
+            }
         }
 
-        private static dynamic GetAllRecords()
+        private dynamic GetAllRecords()
         {
             string SolrUrl = ConfigurationManager.AppSettings["SolrUrl"].ToString();
 
