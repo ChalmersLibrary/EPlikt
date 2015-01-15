@@ -118,6 +118,8 @@
     <Compile Include="Controllers\EPliktController.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Feed\ChalmersFeedSource.cs" />
+    <Compile Include="Feed\EPliktFeedCreator.cs" />
+    <Compile Include="Feed\EPliktFeedSource.cs" />
     <Compile Include="Feed\FeedCreatorBase.cs" />
     <Compile Include="Feed\IFeedCreator.cs" />
     <Compile Include="Feed\IFeedSource.cs" />

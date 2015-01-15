@@ -10,12 +10,9 @@ using EPlikt.Models;
 
 namespace EPlikt.Feed
 {
-    public class ChalmersFeedSource : IFeedSource
+    public class ChalmersFeedSource : EPliktFeedSource
     {
-        public const string publisher = "http://id.kb.se/organisations/SE5564795598";
-        public const string free = "gratis";
-
-        public EPliktFeedContent GetContent()
+        override public EPliktFeedContent GetContent()
         {
             var content = new EPliktFeedContent();
 
