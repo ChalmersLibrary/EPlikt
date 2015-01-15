@@ -17,6 +17,8 @@ namespace EPlikt.Feed
             feedSource = src;
         }
 
+        public abstract void CreateFeed();
+        public abstract int GetItemsCount();
         public abstract string GetXmlFeedStr();
     }
 }

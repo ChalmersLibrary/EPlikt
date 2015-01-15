@@ -18,6 +18,17 @@ namespace EPlikt.Feed
         void SetFeedSource(IFeedSource src);
 
         /// <summary>
+        /// Creates the feed from the current feed source.
+        /// </summary>
+        void CreateFeed();
+
+        /// <summary>
+        /// Simple getter of the current number of items in the feed.
+        /// </summary>
+        /// <returns>The number of items.</returns>
+        int GetItemsCount();
+
+        /// <summary>
         /// Retrieves a string with the XML data for the feed, created from the current feed source.
         /// </summary>
         /// <returns>String with XML data representing the feed.</returns>

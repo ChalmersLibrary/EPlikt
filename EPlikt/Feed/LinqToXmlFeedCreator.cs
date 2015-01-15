@@ -14,7 +14,10 @@ namespace EPlikt.Feed
 {
     public class LinqToXmlFeedCreator : EPliktFeedCreator
     {
-        override public string GetXmlFeedStr()
+        protected string xmlFeedStr = "";
+        protected int itemCount = 0;
+
+        override public void CreateFeed()
         {
             var content = feedSource.GetContent();
 
@@ -41,7 +44,17 @@ namespace EPlikt.Feed
                 feedStr = o.ToString();
             }
 
-            return feedStr;
+            xmlFeedStr = feedStr;
+        }
+
+        override public int GetItemsCount()
+        {
+            return itemCount;
+        }
+
+        override public string GetXmlFeedStr()
+        {
+            return xmlFeedStr;
         }
 
         private XElement CreateChannelElementFromModel(EPliktFeedContent model)
@@ -65,6 +78,7 @@ namespace EPlikt.Feed
 
         private void AddItemElementsToParentFromModel(XElement parent, EPliktFeedContent model)
         {
+            itemCount = 0;
             foreach (var item in model.Items)
             {
                 // Clean potentially invalid XML chars in applicable fields
@@ -110,6 +124,8 @@ namespace EPlikt.Feed
                     string cleanKeywords = item.Keywords.CleanInvalidXmlChars();
                     rss_item.Add(new XElement(media + itemKeywordsXmlElementName, cleanKeywords));
                 }
+
+                itemCount++;
 
                 // add item to channel
                 parent.Add(rss_item);

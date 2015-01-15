@@ -26,14 +26,15 @@ namespace EPlikt.Controllers
         {
             log.Info("Processing feed request.");
 
-            var feedCreator = new LinqToXmlFeedCreator();
-            feedCreator.SetFeedSource(new ChalmersFeedSource());
-
             var res = Request.CreateResponse(HttpStatusCode.OK);
 
             try
-            {
+            { 
+                var feedCreator = new LinqToXmlFeedCreator();
+                feedCreator.SetFeedSource(new ChalmersFeedSource());
+                feedCreator.CreateFeed();
                 res.Content = new StringContent(feedCreator.GetXmlFeedStr(), Encoding.UTF8, "application/rss+xml");
+                log.Info("Successfully delivered " + feedCreator.GetItemsCount() + " items.");
             }
             catch (Exception e)
             {
