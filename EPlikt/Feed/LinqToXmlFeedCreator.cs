@@ -22,18 +22,18 @@ namespace EPlikt.Feed
             XNamespace dcterms = ConfigurationManager.AppSettings["DCtermsNs"].ToString();
 
             var channel = new XElement("channel",
-                new XElement("title", "Chalmers Tekniska Högskola - Pliktleverans av elektroniskt material"),
-                new XElement("link", "http://ctheplikt.azurewebsites.net/Api/EPlikt/"),
-                new XElement("language", "sv"),
-                new XElement("copyright", "Chalmers Tekniska Högskola 2015-"),
-                new XElement("description", "Material från Chalmers Tekniska Högskola som faller under lagen om leveransplikt för elektroniskt material."),
+                new XElement("title", content.Title),
+                new XElement("link", content.Link),
+                new XElement("language", content.Language),
+                new XElement("copyright", content.Copyright),
+                new XElement("description", content.Description),
                 new XElement("image",
-                    new XElement("title", "Chalmers Tekniska Högskola - Pliktleverans av elektroniskt material"),
-                    new XElement("url", "http://publications.lib.chalmers.se/local/img/chalmers_bldmrk.jpg"),
-                    new XElement("link", "http://ctheplikt.azurewebsites.net/Api/EPlikt/"),
-                    new XElement("width", "86"),
-                    new XElement("height", "81"),
-                    new XElement("description", "Chalmers tekniska högskola")
+                    new XElement("title", content.Image.Title),
+                    new XElement("url", content.Image.Url),
+                    new XElement("link", content.Image.Link),
+                    new XElement("width", content.Image.Width),
+                    new XElement("height", content.Image.Height),
+                    new XElement("description", content.Image.Description)
                 )
             );
 
@@ -75,10 +75,6 @@ namespace EPlikt.Feed
                     string cleanAbstract = CleanInvalidXmlChars(item.Abstract);
                     rss_item.Add(new XElement("description", new XCData(cleanAbstract)));
                 }
-                else
-                {
-                    // do nothing
-                }
 
                 if (!string.IsNullOrEmpty(item.Keywords))
                 {
@@ -86,14 +82,9 @@ namespace EPlikt.Feed
                     string cleanKeywords = CleanInvalidXmlChars(item.Keywords);
                     rss_item.Add(new XElement(media + "keywords", cleanKeywords));
                 }
-                else
-                {
-                    // do nothing
-                }
 
                 // add item to channel
                 channel.Add(rss_item);
-                
             }
 
             XDocument doc = new XDocument(

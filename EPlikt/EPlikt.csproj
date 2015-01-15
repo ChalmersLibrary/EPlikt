@@ -126,6 +126,7 @@
     </Compile>
     <Compile Include="Models\EPliktFeedContent.cs" />
     <Compile Include="Models\EPliktFeedItem.cs" />
+    <Compile Include="Models\FeedImage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

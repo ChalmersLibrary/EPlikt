@@ -22,6 +22,21 @@ namespace EPlikt.Feed
             string publisher = "http://id.kb.se/organisations/SE5564795598";
             string free = "gratis";
 
+            content.Title = "Chalmers Tekniska Högskola - Pliktleverans av elektroniskt material";
+            content.Link = "http://ctheplikt.azurewebsites.net/Api/EPlikt/";
+            content.Language = "sv";
+            content.Copyright = "Chalmers Tekniska Högskola 2015-";
+            content.Description = "Material från Chalmers Tekniska Högskola som faller under lagen om leveransplikt för elektroniskt material.";
+
+            var feedImage = new FeedImage();
+            feedImage.Title = "Chalmers Tekniska Högskola - Pliktleverans av elektroniskt material";
+            feedImage.Url = "http://publications.lib.chalmers.se/local/img/chalmers_bldmrk.jpg";
+            feedImage.Link = "http://ctheplikt.azurewebsites.net/Api/EPlikt/";
+            feedImage.Width = "86";
+            feedImage.Height = "81";
+            feedImage.Description = "Chalmers tekniska högskola";
+            content.Image = feedImage;
+
             foreach (var doc in records.response.docs)
             {
                 var item = new EPliktFeedItem();
