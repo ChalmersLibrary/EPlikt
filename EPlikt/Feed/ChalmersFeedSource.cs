@@ -15,11 +15,14 @@ namespace EPlikt.Feed
     {
         public static string ApiBaseUrl = ConfigurationManager.AppSettings["webapiBaseURL"];
         public static string ApiPublicationBaseUrl = ConfigurationManager.AppSettings["webapiChalmersResearchPublicationsBaseURL"];
+        public static string ApiPublicationUserId = ConfigurationManager.AppSettings["ResearchRemoteBasicAuthUsername"];
+        public static string ApiPublicationPw = ConfigurationManager.AppSettings["ResearchRemoteBasicAuthPassword"];
+        public static string researchBaseUrl = ConfigurationManager.AppSettings["ResearchBaseUrl"];
 
         /// <summary>
         /// Authentication credentials to the WebApi
         /// </summary>
-        public static NetworkCredential NetworkCredentials = new NetworkCredential("research", "research99");
+        public static NetworkCredential NetworkCredentials = new NetworkCredential(ApiPublicationUserId, ApiPublicationPw);
 
         override public EPliktFeedContent GetContent()
         {
@@ -27,8 +30,7 @@ namespace EPlikt.Feed
 
             FillInDataAboutFeed(content);
 
-            //FillInDataForFeedItems(content, GetAllRecords());
-            FillInDataForFeedItems(content, GetAllResearchRecords());
+            FillInDataForFeedItems(content, GetAllRecords());
 
             return content;
         }
@@ -41,101 +43,156 @@ namespace EPlikt.Feed
             feed.Copyright = "Chalmers Tekniska Högskola 2015-";
             feed.Description = "Material från Chalmers Tekniska Högskola som faller under lagen om leveransplikt för elektroniskt material.";
             feed.Image.Title = "Chalmers Tekniska Högskola - Pliktleverans av elektroniskt material";
-            feed.Image.Url = "https://research.chalmers.se/Images/chalmers-avancez.png";
+            feed.Image.Url = researchBaseUrl + "/Images/chalmers_bldmrk.jpg";
             feed.Image.Link = "http://feeds.lib.chalmers.se/api/eplikt/";
             feed.Image.Width = "86";
             feed.Image.Height = "81";
             feed.Image.Description = "Chalmers tekniska högskola";
         }
 
-        //private void FillInDataForFeedItems(EPliktFeedContent feed, dynamic records)
-        //{
-        //    foreach (var doc in records.response.docs)
-        //    {
-        //        var item = new EPliktFeedItem();
-        //        item.Guid = (String)doc["url"];
-        //        item.Title = (String)doc.title;
-        //        item.Abstract = (String)doc["abstract"];
-        //        item.Keywords = (String)doc["keywords"];
-        //        item.Category = (String)doc["pubtype"];
-        //        item.Link = (String)doc["url"];
-        //        item.PubDate = (String)doc["pubdate_rfc822"];
-        //        item.Publisher = publisher;
-        //        item.AccessRights = free;
-        //        item.ContentType = (String)doc["mimetype"];
-        //        item.MD5 = (String)doc["md5sum"];
-        //        List<string> creators = doc["person_role_mapping"].ToObject<List<string>>();
-        //        item.Creator = creators;
-
-        //        feed.Items.Add(item);
-        //    }
-        //}
-
         private void FillInDataForFeedItems(EPliktFeedContent feed, dynamic records)
         {
             foreach (var doc in records.Publications)
             {
-                String pubtype = String.Empty;
-                String pubdateRfc822 = String.Empty;
-                String url = String.Empty;
+                String pubtype = String.Empty;                
+                String abstractp = String.Empty;
+                String keywords = String.Empty;
 
-                if (!String.IsNullOrEmpty((String)doc["ModifiedDate"]))
+                if (doc["PublicationType"] != null)
                 {
-                    DateTime pubdate = new DateTime(doc["ModifiedDate"]);
-                    pubdateRfc822 = pubdate.ToString("ddd, dd MMM yyyy HH:mm:ss Z", CultureInfo.InvariantCulture);
-                }
-                else
-                {
-                    DateTime pubdate = new DateTime(doc["CreatedDate"]);
-                    pubdateRfc822 = pubdate.ToString("ddd, dd MMM yyyy HH:mm:ss Z", CultureInfo.InvariantCulture);
+                    pubtype = doc["PublicationType"]["NameSwe"];
                 }
 
-                if (doc["IdentifierCplPubid"] != null)
+                if (doc["Abstract"] != null)
                 {
-                    string pubid = doc["IdentifierCplPubid"][0];
-                    url = "...." + pubid;
+                    abstractp = doc["Abstract"];
                 }
 
-                var item = new EPliktFeedItem();
-                item.Guid = (String)url;
-                item.Title = (String)doc["Title"];
-                item.Abstract = (String)doc["Abstract"];
-                //item.Keywords = (String)doc["keywords"];
-                item.Category = (String)doc["pubtype"];
-                item.Link = (String)url;
-                item.PubDate = (String)pubdateRfc822;
-                item.Publisher = publisher;
-                item.AccessRights = free;
-                item.ContentType = (String)doc["mimetype"];
-                item.MD5 = (String)doc["md5sum"];
-                List<string> creators = doc["person_role_mapping"].ToObject<List<string>>();
-                item.Creator = creators;
+                List<string> creators = new List<string>();
 
-                feed.Items.Add(item);
+                if (doc["Persons"] != null)
+                {
+                    foreach (var person in doc["Persons"])
+                    {
+                        String author = String.Empty;
+                        String role = String.Empty;
+
+                        if (person.Role != null)
+                        {
+                            role = person.Role["NameSwe"];
+                        }
+                        else
+                        {
+                            role = "Författare";
+                        }
+
+                        if (person.PersonData != null)
+                        {
+                            author = person.PersonData["DisplayName"] + " (" + role;
+                            creators.Add(author);
+                        }
+                    }
+                }
+
+                if (doc["DataObjects"] != null)
+                {
+
+                    foreach (var fulltext in doc.DataObjects)
+                    {
+                        String url = String.Empty;
+                        String md5Sum = String.Empty;
+                        String mimetype = String.Empty;
+                        String pubdateRfc822 = String.Empty;
+
+                        DateTime? embargodate;
+
+                        if (fulltext["EmbargoDate"] != null)
+                        {
+                            DateTime embargodate_notnull;
+                            string edate = ((String)fulltext["EmbargoDate"]);
+                            if (DateTime.TryParse(edate, out embargodate_notnull))
+                            {
+                                embargodate = embargodate_notnull;
+                            }
+                            else
+                            {
+                                embargodate = null;
+                            }
+                        }
+                        else
+                        {
+                            embargodate = null;
+                        }
+
+                        if (fulltext["Url"] != null)
+                        {
+                            url = (String)fulltext["Url"];
+                        }
+                        
+                        if (fulltext["IsLocal"] == true && fulltext["IsMainFulltext"] == true && url != null && (embargodate == null || embargodate < DateTime.Now) && url.Contains("chalmers.se"))
+                        {
+                            url = (String)fulltext["Url"];
+
+                            if (fulltext["MimeType"] != null)
+                            {
+                                mimetype = (String)fulltext["MimeType"];
+                            }
+
+                            if (fulltext["Md5Sum"] != null)
+                            {
+                                md5Sum = (String)fulltext["Md5Sum"];
+                            }
+
+                            if (!String.IsNullOrEmpty((String)fulltext["ModifiedDate"]))
+                            {
+                                DateTime pubdate;
+                                string pdate = ((String)fulltext["ModifiedDate"]);
+
+                                if (DateTime.TryParse(pdate, out pubdate))
+                                {
+                                    pubdateRfc822 = pubdate.ToString("ddd, dd MMM yyyy HH:mm:ss Z", CultureInfo.InvariantCulture);
+                                }
+                            }
+                            else
+                            {
+                                DateTime pubdate;
+                                string pdate = ((String)fulltext["CreatedDate"]);
+
+                                if (DateTime.TryParse(pdate, out pubdate))
+                                {
+                                    pubdateRfc822 = pubdate.ToString("ddd, dd MMM yyyy HH:mm:ss Z", CultureInfo.InvariantCulture);
+                                }                               
+                            }
+
+                            var item = new EPliktFeedItem();
+                            item.Guid = url;
+                            item.Title = (String)doc["Title"];
+                            item.Abstract = abstractp;
+                            item.Keywords = keywords;
+                            item.Category = pubtype;
+                            item.Link = url;
+                            item.PubDate = pubdateRfc822;
+                            item.Publisher = publisher;
+                            item.AccessRights = free;
+                            item.ContentType = mimetype;
+                            item.MD5 = md5Sum;                          
+                            item.Creator = creators;
+
+                            feed.Items.Add(item);
+                        }
+                    }
+                }
             }
         }
 
         private dynamic GetAllRecords()
         {
-            string SolrUrl = ConfigurationManager.AppSettings["SolrUrl"].ToString();
-
-            HttpWebRequest fileReq = (HttpWebRequest)HttpWebRequest.Create(SolrUrl + "select?q=*:*&wt=json&rows=9999");
-            fileReq.CookieContainer = new CookieContainer();
-            fileReq.AllowAutoRedirect = true;
-            HttpWebResponse fileResp = (HttpWebResponse)fileReq.GetResponse();
-            var outputStream = fileResp.GetResponseStream();
-
-            var sr = new StreamReader(outputStream);
-            return JsonConvert.DeserializeObject(sr.ReadToEnd());
-        }
-
-        private dynamic GetAllResearchRecords()
-        {
             string jsonPublications = null;
 
-            string query = "_exists_%3ADataObjects%20and%20_exists_%3AValidatedBy%20and%20IsDeleted%3Afalse%20and%20IsDraft%3Afalse%20and%20DataObjects.MimeType%3Aapplication%2Fpdf%20and%20DataObjects.IsLocal%3Atrue%20and%20DataObjects.IsMainFulltext%3Atrue%20and%20DataObjects.AccessType%3A3%20and%20Year%3A%5B2015%20TO%20*%5D%20and%20CreatedDate%3A%5B*%20TO%20now-90d%5D%20and%20DataObjects.EmbargoDate%3A%5B*%20TO%20now%5D";
-            
-            jsonPublications = (GetPublications(query,
+            string query = "_exists_:DataObjects and _exists_:ValidatedBy and IsDeleted:false and IsDraft:false and DataObjects.MimeType:application/pdf and DataObjects.IsLocal:true and DataObjects.IsMainFulltext:true and DataObjects.AccessType:3 and Year:[2015 TO *] and CreatedDate:[* TO now-90d]";
+            String queryEnc = HttpUtility.UrlEncode(query);
+
+            jsonPublications = (GetPublications(queryEnc,
             10000,
             0,
             "CreatedDate",
@@ -143,12 +200,12 @@ namespace EPlikt.Feed
             new string[] {
                 "Id",
                 "Year",
-                "IdentifierCplPubid",
                 "Title",
                 "Abstract",
                 "CreatedDate",
-                "ModifiedDate",
-                "Persons.DisplayName",
+                "PublicationType.NameSwe",
+                "Persons.PersonData.DisplayName",
+                "Persons.Role.NameSwe",
                 "DataObjects"}));
 
             if (jsonPublications != null)
@@ -164,7 +221,7 @@ namespace EPlikt.Feed
         private string GetPublications(string query, int max, int start, string sort, string sortOrder, string[] selectedFields)
         {
             string sf = selectedFields == null ? null : "&selectedFields=" + string.Join(",", selectedFields);
-            return DownloadPublicationApiDataString("/publication?query={query}max={max}&sort={sort}{sf}&start={start}&sortOrder={sortOrder}");
+            return DownloadPublicationApiDataString("/Publications?query=" + query + "&max=" + max + "&sort=" + sort + sf + "&start=" + start + "&sortOrder=" + sortOrder);
         }
 
         public static string DownloadPublicationApiDataString(string apiEndPoint)
@@ -194,9 +251,6 @@ namespace EPlikt.Feed
                 return data;
             }
         }
-
-
     }
-
     
 }
