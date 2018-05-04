@@ -150,7 +150,17 @@ namespace EPlikt.Feed
 
                                 if (DateTime.TryParse(pdate, out pubdate))
                                 {
-                                    pubdateRfc822 = pubdate.ToString("ddd, dd MMM yyyy HH:mm:ss Z", CultureInfo.InvariantCulture);
+                                    pubdateRfc822 = pubdate.ToString("ddd, dd MMM yyyy HH:mm:ss +0100", CultureInfo.InvariantCulture);
+                                }
+                            }
+                            else if (!String.IsNullOrEmpty((String)fulltext["ValidatedDate"]))
+                            {
+                                DateTime pubdate;
+                                string pdate = ((String)fulltext["ValidatedDate"]);
+
+                                if (DateTime.TryParse(pdate, out pubdate))
+                                {
+                                    pubdateRfc822 = pubdate.ToString("ddd, dd MMM yyyy HH:mm:ss +0100", CultureInfo.InvariantCulture);
                                 }
                             }
                             else
@@ -160,7 +170,7 @@ namespace EPlikt.Feed
 
                                 if (DateTime.TryParse(pdate, out pubdate))
                                 {
-                                    pubdateRfc822 = pubdate.ToString("ddd, dd MMM yyyy HH:mm:ss Z", CultureInfo.InvariantCulture);
+                                    pubdateRfc822 = pubdate.ToString("ddd, dd MMM yyyy HH:mm:ss +0100", CultureInfo.InvariantCulture);
                                 }                               
                             }
 
@@ -189,13 +199,13 @@ namespace EPlikt.Feed
         {
             string jsonPublications = null;
 
-            string query = "_exists_:DataObjects and _exists_:ValidatedBy and IsDeleted:false and IsDraft:false and DataObjects.MimeType:application/pdf and DataObjects.IsLocal:true and DataObjects.IsMainFulltext:true and DataObjects.AccessType:3 and Year:[2015 TO *] and CreatedDate:[* TO now-90d]";
+            string query = "_exists_:DataObjects and _exists_:ValidatedBy and IsDeleted:false and IsDraft:false and DataObjects.MimeType:application/pdf and DataObjects.IsLocal:true and DataObjects.IsMainFulltext:true and DataObjects.AccessType:3 and Year:[2015 TO *] and ValidatedDate:  ";
             String queryEnc = HttpUtility.UrlEncode(query);
 
             jsonPublications = (GetPublications(queryEnc,
             10000,
             0,
-            "CreatedDate",
+            "ValidatedDate",
             "desc",
             new string[] {
                 "Id",
@@ -203,6 +213,8 @@ namespace EPlikt.Feed
                 "Title",
                 "Abstract",
                 "CreatedDate",
+                "ModifiedDate",
+                "ValidatedDate",
                 "PublicationType.NameSwe",
                 "Persons.PersonData.DisplayName",
                 "Persons.Role.NameSwe",
