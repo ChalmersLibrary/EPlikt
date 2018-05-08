@@ -20,6 +20,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -160,6 +161,8 @@
     <None Include="Properties\PublishProfiles\ctheplikt - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\ctheplikt - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\ctheplikt.pubxml" />
+    <None Include="Properties\PublishProfiles\heyman - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\heyman - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\heyman.pubxml" />
   </ItemGroup>
   <PropertyGroup>
@@ -176,7 +179,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50650</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

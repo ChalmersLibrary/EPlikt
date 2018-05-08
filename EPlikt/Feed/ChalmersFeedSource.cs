@@ -8,6 +8,7 @@ using System.Net;
 using System.Web;
 using EPlikt.Models;
 using System.Globalization;
+using System.Text;
 
 namespace EPlikt.Feed
 {
@@ -18,6 +19,7 @@ namespace EPlikt.Feed
         public static string ApiPublicationUserId = ConfigurationManager.AppSettings["ResearchRemoteBasicAuthUsername"];
         public static string ApiPublicationPw = ConfigurationManager.AppSettings["ResearchRemoteBasicAuthPassword"];
         public static string researchBaseUrl = ConfigurationManager.AppSettings["ResearchBaseUrl"];
+        public static string feedLink = ConfigurationManager.AppSettings["feedLink"];
 
         /// <summary>
         /// Authentication credentials to the WebApi
@@ -38,13 +40,13 @@ namespace EPlikt.Feed
         private void FillInDataAboutFeed(EPliktFeedContent feed)
         {
             feed.Title = "Chalmers Tekniska Högskola - Pliktleverans av elektroniskt material";
-            feed.Link = "http://feeds.lib.chalmers.se/api/eplikt/";
+            feed.Link = feedLink;
             feed.Language = "sv";
             feed.Copyright = "Chalmers Tekniska Högskola 2015-";
             feed.Description = "Material från Chalmers Tekniska Högskola som faller under lagen om leveransplikt för elektroniskt material.";
             feed.Image.Title = "Chalmers Tekniska Högskola - Pliktleverans av elektroniskt material";
             feed.Image.Url = researchBaseUrl + "/Images/chalmers_bldmrk.jpg";
-            feed.Image.Link = "http://feeds.lib.chalmers.se/api/eplikt/";
+            feed.Image.Link = feedLink;
             feed.Image.Width = "86";
             feed.Image.Height = "81";
             feed.Image.Description = "Chalmers tekniska högskola";
@@ -52,11 +54,12 @@ namespace EPlikt.Feed
 
         private void FillInDataForFeedItems(EPliktFeedContent feed, dynamic records)
         {
-            foreach (var doc in records.Publications)
+           foreach (var doc in records.Publications)
             {
                 String pubtype = String.Empty;                
                 String abstractp = String.Empty;
                 String keywords = String.Empty;
+                String pubdateRfc822 = String.Empty;
 
                 if (doc["PublicationType"] != null)
                 {
@@ -94,6 +97,43 @@ namespace EPlikt.Feed
                     }
                 }
 
+                if (!String.IsNullOrEmpty((String)doc["LatestEventDate"]))
+                {
+                    DateTime pubdate;
+                    string pdate = ((String)doc["UpdatedDate"]);
+
+                    if (DateTime.TryParse(pdate, out pubdate))
+                    {
+                        pubdateRfc822 = pubdate.ToString("ddd, dd MMM yyyy HH:mm:ss +0100", CultureInfo.InvariantCulture);
+                    }
+                }
+                else
+                {
+                    DateTime pubdate;
+                    string pdate = ((String)doc["CreatedDate"]);
+
+                    if (DateTime.TryParse(pdate, out pubdate))
+                    {
+                        pubdateRfc822 = pubdate.ToString("ddd, dd MMM yyyy HH:mm:ss +0100", CultureInfo.InvariantCulture);
+                    }
+                }
+
+                if (doc["Keywords"] != null)
+                {
+                    var index = 0;
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var keyword in doc["Keywords"])
+                    {
+                        sb.Append(keyword["Value"]);
+                        if (index > 0)
+                        {
+                            sb.Append(", ");
+                        }
+                        index++;
+                    }
+                    keywords = sb.ToString();
+                }
+
                 if (doc["DataObjects"] != null)
                 {
 
@@ -102,8 +142,7 @@ namespace EPlikt.Feed
                         String url = String.Empty;
                         String md5Sum = String.Empty;
                         String mimetype = String.Empty;
-                        String pubdateRfc822 = String.Empty;
-
+                        
                         DateTime? embargodate;
 
                         if (fulltext["EmbargoDate"] != null)
@@ -143,37 +182,6 @@ namespace EPlikt.Feed
                                 md5Sum = (String)fulltext["Md5Sum"];
                             }
 
-                            if (!String.IsNullOrEmpty((String)fulltext["ModifiedDate"]))
-                            {
-                                DateTime pubdate;
-                                string pdate = ((String)fulltext["ModifiedDate"]);
-
-                                if (DateTime.TryParse(pdate, out pubdate))
-                                {
-                                    pubdateRfc822 = pubdate.ToString("ddd, dd MMM yyyy HH:mm:ss +0100", CultureInfo.InvariantCulture);
-                                }
-                            }
-                            else if (!String.IsNullOrEmpty((String)fulltext["ValidatedDate"]))
-                            {
-                                DateTime pubdate;
-                                string pdate = ((String)fulltext["ValidatedDate"]);
-
-                                if (DateTime.TryParse(pdate, out pubdate))
-                                {
-                                    pubdateRfc822 = pubdate.ToString("ddd, dd MMM yyyy HH:mm:ss +0100", CultureInfo.InvariantCulture);
-                                }
-                            }
-                            else
-                            {
-                                DateTime pubdate;
-                                string pdate = ((String)fulltext["CreatedDate"]);
-
-                                if (DateTime.TryParse(pdate, out pubdate))
-                                {
-                                    pubdateRfc822 = pubdate.ToString("ddd, dd MMM yyyy HH:mm:ss +0100", CultureInfo.InvariantCulture);
-                                }                               
-                            }
-
                             var item = new EPliktFeedItem();
                             item.Guid = url;
                             item.Title = (String)doc["Title"];
@@ -199,13 +207,13 @@ namespace EPlikt.Feed
         {
             string jsonPublications = null;
 
-            string query = "_exists_:DataObjects and _exists_:ValidatedBy and IsDeleted:false and IsDraft:false and DataObjects.MimeType:application/pdf and DataObjects.IsLocal:true and DataObjects.IsMainFulltext:true and DataObjects.AccessType:3 and Year:[2015 TO *] and ValidatedDate:  ";
+            string query = "_exists_:DataObjects and _exists_:ValidatedBy and IsDeleted:false and IsDraft:false and DataObjects.MimeType:application/pdf and DataObjects.IsLocal:true and DataObjects.IsMainFulltext:true and DataObjects.AccessType:3 and Year:[2015 TO *] and ValidatedDate:[* TO now-90d]";
             String queryEnc = HttpUtility.UrlEncode(query);
 
             jsonPublications = (GetPublications(queryEnc,
             10000,
             0,
-            "ValidatedDate",
+            "LatestEventDate",
             "desc",
             new string[] {
                 "Id",
@@ -213,11 +221,13 @@ namespace EPlikt.Feed
                 "Title",
                 "Abstract",
                 "CreatedDate",
-                "ModifiedDate",
+                "UpdatedDate",
                 "ValidatedDate",
+                "LatestEventDate",
                 "PublicationType.NameSwe",
                 "Persons.PersonData.DisplayName",
                 "Persons.Role.NameSwe",
+                "Keywords",
                 "DataObjects"}));
 
             if (jsonPublications != null)
