@@ -100,7 +100,7 @@ namespace EPlikt.Feed
                 if (!String.IsNullOrEmpty((String)doc["LatestEventDate"]))
                 {
                     DateTime pubdate;
-                    string pdate = ((String)doc["UpdatedDate"]);
+                    string pdate = ((String)doc["LatestEventDate"]);
 
                     if (DateTime.TryParse(pdate, out pubdate))
                     {
