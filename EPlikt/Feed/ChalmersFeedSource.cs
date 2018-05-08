@@ -164,8 +164,13 @@ namespace EPlikt.Feed
                         }
 
                         if (fulltext["Url"] != null)
-                        {
+                        {                           
                             url = (String)fulltext["Url"];
+
+                            if (url.StartsWith("publication"))
+                            {
+                                url = "https://research.chalmers.se/" + url;
+                            }
                         }
                         
                         if (fulltext["IsLocal"] == true && fulltext["IsMainFulltext"] == true && url != null && (embargodate == null || embargodate < DateTime.Now) && url.Contains("chalmers.se"))
@@ -207,7 +212,7 @@ namespace EPlikt.Feed
         {
             string jsonPublications = null;
 
-            string query = "_exists_:DataObjects and _exists_:ValidatedBy and IsDeleted:false and IsDraft:false and DataObjects.MimeType:application/pdf and DataObjects.IsLocal:true and DataObjects.IsMainFulltext:true and DataObjects.AccessType:3 and Year:[2015 TO *] and ValidatedDate:[* TO now-90d]";
+            string query = "_exists_:DataObjects and _exists_:ValidatedBy and IsDeleted:false and IsDraft:false and DataObjects.MimeType:application/pdf and DataObjects.IsLocal:true and DataObjects.IsMainFulltext:true and Year:[2015 TO *] and ValidatedDate:[* TO now-90d]";
             String queryEnc = HttpUtility.UrlEncode(query);
 
             jsonPublications = (GetPublications(queryEnc,
