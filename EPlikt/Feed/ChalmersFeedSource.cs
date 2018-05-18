@@ -162,20 +162,18 @@ namespace EPlikt.Feed
                         {
                             embargodate = null;
                         }
-
-                        if (fulltext["Url"] != null)
-                        {                           
-                            url = (String)fulltext["Url"];
-
-                            if (url.StartsWith("publication"))
-                            {
-                                url = "https://research.chalmers.se/" + url;
-                            }
-                        }
                         
-                        if (fulltext["IsLocal"] == true && fulltext["IsMainFulltext"] == true && url != null && (embargodate == null || embargodate < DateTime.Now) && url.Contains("chalmers.se"))
+                        if (fulltext["IsLocal"] == true && fulltext["IsMainFulltext"] == true && url != null && (embargodate == null || embargodate < DateTime.Now))
                         {
-                            url = (String)fulltext["Url"];
+                            if (fulltext["Url"] != null)
+                            {
+                                url = (String)fulltext["Url"];
+
+                                if (!url.StartsWith("http"))
+                                {
+                                    url = "https://research.chalmers.se/" + url;
+                                }
+                            }
 
                             if (fulltext["MimeType"] != null)
                             {
