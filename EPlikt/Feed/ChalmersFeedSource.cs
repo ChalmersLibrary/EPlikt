@@ -212,7 +212,7 @@ namespace EPlikt.Feed
         {
             string jsonPublications = null;
 
-            string query = "_exists_:DataObjects and _exists_:ValidatedBy and IsDeleted:false and IsDraft:false and DataObjects.MimeType:application/pdf and DataObjects.IsLocal:true and DataObjects.IsMainFulltext:true and Year:[2015 TO *] and ValidatedDate:[* TO now-90d]";
+            string query = "_exists_:DataObjects and _exists_:ValidatedBy and IsDeleted:false and IsDraft:false and DataObjects.MimeType:application/pdf and DataObjects.IsOpenAccess:true and Year:[2015 TO *] and ValidatedDate:[* TO now-90d]";
             String queryEnc = HttpUtility.UrlEncode(query);
 
             jsonPublications = (GetPublications(queryEnc,
@@ -220,6 +220,7 @@ namespace EPlikt.Feed
             0,
             "LatestEventDate",
             "desc",
+            null,
             new string[] {
                 "Id",
                 "Year",
@@ -245,7 +246,7 @@ namespace EPlikt.Feed
             }            
         }
 
-        private string GetPublications(string query, int max, int start, string sort, string sortOrder, string[] selectedFields)
+        private string GetPublications(string query, int max, int start, string sort, string sortOrder, string sortMultiple, string[] selectedFields)
         {
             string sf = selectedFields == null ? null : "&selectedFields=" + string.Join(",", selectedFields);
             return DownloadPublicationApiDataString("/Publications?query=" + query + "&max=" + max + "&sort=" + sort + sf + "&start=" + start + "&sortOrder=" + sortOrder);
