@@ -60,6 +60,7 @@ namespace EPlikt.Feed
                 String abstractp = String.Empty;
                 String keywords = String.Empty;
                 String pubdateRfc822 = String.Empty;
+                String pdate = String.Empty;
 
                 if (doc["PublicationType"] != null)
                 {
@@ -100,7 +101,7 @@ namespace EPlikt.Feed
                 if (!String.IsNullOrEmpty((String)doc["LatestEventDate"]))
                 {
                     DateTime pubdate;
-                    string pdate = ((String)doc["LatestEventDate"]);
+                    pdate = ((String)doc["LatestEventDate"]);
 
                     if (DateTime.TryParse(pdate, out pubdate))
                     {
@@ -110,7 +111,7 @@ namespace EPlikt.Feed
                 else
                 {
                     DateTime pubdate;
-                    string pdate = ((String)doc["CreatedDate"]);
+                    pdate = ((String)doc["CreatedDate"]);
 
                     if (DateTime.TryParse(pdate, out pubdate))
                     {
