@@ -211,7 +211,7 @@ namespace EPlikt.Feed
         {
             string jsonPublications = null;
 
-            string query = "_exists_:DataObjects and _exists_:ValidatedBy and IsDeleted:false and IsDraft:false and DataObjects.MimeType:application/pdf and DataObjects.IsOpenAccess:true and Year:[2015 TO *] and ValidatedDate:[* TO now-90d]";
+            string query = "_exists_:DataObjects and _exists_:ValidatedBy and _exists_:LatestEventDate and IsDeleted:false and IsDraft:false and DataObjects.MimeType:application/pdf and DataObjects.IsOpenAccess:true and Year:[2015 TO *] and ValidatedDate:[* TO now-90d]";
             String queryEnc = HttpUtility.UrlEncode(query);
 
             jsonPublications = (GetPublications(queryEnc,
