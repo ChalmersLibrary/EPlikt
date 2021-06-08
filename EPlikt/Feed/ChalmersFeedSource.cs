@@ -98,26 +98,26 @@ namespace EPlikt.Feed
                     }
                 }
 
-                if (!String.IsNullOrEmpty((String)doc["LatestEventDate"]))
-                {
-                    DateTime pubdate;
-                    pdate = ((String)doc["LatestEventDate"]);
+                //if (!String.IsNullOrEmpty((String)doc["LatestEventDate"]))
+                //{
+                //    DateTime pubdate;
+                //    pdate = ((String)doc["LatestEventDate"]);
 
-                    if (DateTime.TryParse(pdate, out pubdate))
-                    {
-                        pubdateRfc822 = pubdate.ToString("ddd, dd MMM yyyy HH:mm:ss +0100", CultureInfo.InvariantCulture);
-                    }
-                }
-                else
-                {
-                    DateTime pubdate;
-                    pdate = ((String)doc["CreatedDate"]);
+                //    if (DateTime.TryParse(pdate, out pubdate))
+                //    {
+                //        pubdateRfc822 = pubdate.ToString("ddd, dd MMM yyyy HH:mm:ss +0100", CultureInfo.InvariantCulture);
+                //    }
+                //}
+                //else
+                //{
+                //    DateTime pubdate;
+                //    pdate = ((String)doc["CreatedDate"]);
 
-                    if (DateTime.TryParse(pdate, out pubdate))
-                    {
-                        pubdateRfc822 = pubdate.ToString("ddd, dd MMM yyyy HH:mm:ss +0100", CultureInfo.InvariantCulture);
-                    }
-                }
+                //    if (DateTime.TryParse(pdate, out pubdate))
+                //    {
+                //        pubdateRfc822 = pubdate.ToString("ddd, dd MMM yyyy HH:mm:ss +0100", CultureInfo.InvariantCulture);
+                //    }
+                //}
 
                 if (doc["Keywords"] != null)
                 {
@@ -176,6 +176,21 @@ namespace EPlikt.Feed
                                 }
                             }
 
+                            if (!String.IsNullOrEmpty(fulltext["CreatedDate"]))
+                            {
+                                pdate = (String)fulltext["CreatedDate"];
+                            }
+                            else {
+                                pdate = (String)doc["LatestEventDate"];
+                            }
+
+                            DateTime pubdate;
+
+                            if (DateTime.TryParse(pdate, out pubdate))
+                            {
+                                pubdateRfc822 = pubdate.ToString("ddd, dd MMM yyyy HH:mm:ss +0100", CultureInfo.InvariantCulture);
+                            }
+
                             if (fulltext["MimeType"] != null)
                             {
                                 mimetype = (String)fulltext["MimeType"];
@@ -211,13 +226,14 @@ namespace EPlikt.Feed
         {
             string jsonPublications = null;
 
-            string query = "_exists_:DataObjects and _exists_:ValidatedBy and _exists_:LatestEventDate and IsDeleted:false and IsDraft:false and DataObjects.MimeType:application/pdf and DataObjects.IsOpenAccess:true and Year:[2015 TO *] and ValidatedDate:[* TO now-90d]";
+            //string query = "_exists_:DataObjects and _exists_:ValidatedBy and _exists_:LatestEventDate and IsDeleted:false and IsDraft:false and DataObjects.MimeType:application/pdf and DataObjects.IsOpenAccess:true and Year:[2015 TO *] and ValidatedDate:[* TO now-90d]";
+            string query = "_exists_:DataObjects and _exists_:ValidatedBy and _exists_:LatestEventDate and IsDeleted:false and IsDraft:false and DataObjects.MimeType:application/pdf and DataObjects.IsOpenAccess:true and DataObjects.IsLocal:true and Year:[2015 TO *] and DataObjects.CreatedDate:[now-8d TO now]";
             String queryEnc = HttpUtility.UrlEncode(query);
 
             jsonPublications = (GetPublications(queryEnc,
             10000,
             0,
-            "LatestEventDate",
+            "DataObjects.CreatedDate",
             "desc",
             null,
             new string[] {
