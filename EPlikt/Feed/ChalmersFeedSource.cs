@@ -176,7 +176,7 @@ namespace EPlikt.Feed
                                 }
                             }
 
-                            if (!String.IsNullOrEmpty(fulltext["CreatedDate"]))
+                            if (fulltext["CreatedDate"] != null)
                             {
                                 pdate = (String)fulltext["CreatedDate"];
                             }
