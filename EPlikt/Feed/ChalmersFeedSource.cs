@@ -231,7 +231,7 @@ namespace EPlikt.Feed
             String queryEnc = HttpUtility.UrlEncode(query);
 
             jsonPublications = (GetPublications(queryEnc,
-            10000,
+            15000,
             0,
             "DataObjects.CreatedDate",
             "desc",
