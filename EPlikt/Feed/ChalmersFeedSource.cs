@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -61,6 +61,13 @@ namespace EPlikt.Feed
                 String keywords = String.Empty;
                 String pubdateRfc822 = String.Empty;
                 String pdate = String.Empty;
+                String ptitle = String.Empty;
+
+                if (doc["Title"] != null)
+                {
+                    ptitle = doc["Title"];
+                    ptitle = ptitle.Trim();
+                }
 
                 if (doc["PublicationType"] != null)
                 {
@@ -70,6 +77,9 @@ namespace EPlikt.Feed
                 if (doc["Abstract"] != null)
                 {
                     abstractp = doc["Abstract"];
+                    abstractp = abstractp.Trim();
+                    abstractp = HttpUtility.HtmlDecode(abstractp.ToString());
+                    abstractp = abstractp.Replace("\n", " ").Replace("\r", " ");
                 }
 
                 List<string> creators = new List<string>();
@@ -92,8 +102,8 @@ namespace EPlikt.Feed
 
                         if (person.PersonData != null)
                         {
-                            author = person.PersonData["DisplayName"] + " (" + role;
-                            creators.Add(author);
+                            author = person.PersonData["LastName"] + ", " + person.PersonData["FirstName"] + " (" + role;
+                            creators.Add(author.Trim());
                         }
                     }
                 }
@@ -125,14 +135,25 @@ namespace EPlikt.Feed
                     StringBuilder sb = new StringBuilder();
                     foreach (var keyword in doc["Keywords"])
                     {
-                        sb.Append(keyword["Value"]);
+                        string kw = keyword["Value"];
+                        kw = kw.Trim();
+                        if (kw.EndsWith(","))
+                        {
+                            kw = kw.Remove(kw.Length - 1);
+                        }
+                        sb.Append(kw);
                         if (index > 0)
                         {
                             sb.Append(", ");
                         }
                         index++;
                     }
-                    keywords = sb.ToString();
+                    keywords = sb.ToString().Trim();
+                    // Remove last , if exists
+                    if (keywords.EndsWith(","))
+                    {
+                        keywords = keywords.Remove(keywords.Length - 1);
+                    }
                 }
 
                 if (doc["DataObjects"] != null)
@@ -203,7 +224,7 @@ namespace EPlikt.Feed
 
                             var item = new EPliktFeedItem();
                             item.Guid = url;
-                            item.Title = (String)doc["Title"];
+                            item.Title = ptitle;
                             item.Abstract = abstractp;
                             item.Keywords = keywords;
                             item.Category = pubtype;
@@ -228,10 +249,12 @@ namespace EPlikt.Feed
 
             //string query = "_exists_:DataObjects and _exists_:ValidatedBy and _exists_:LatestEventDate and IsDeleted:false and IsDraft:false and DataObjects.MimeType:application/pdf and DataObjects.IsOpenAccess:true and Year:[2015 TO *] and ValidatedDate:[* TO now-90d]";
             string query = "_exists_:DataObjects and _exists_:ValidatedBy and _exists_:LatestEventDate and IsDeleted:false and IsDraft:false and DataObjects.MimeType:application/pdf and DataObjects.IsOpenAccess:true and DataObjects.IsLocal:true and Year:[2015 TO *] and DataObjects.CreatedDate:[now-8d TO now]";
+            // Full dump:
+            //string query = "_exists_:DataObjects and _exists_:ValidatedBy and _exists_:LatestEventDate and IsDeleted:false and IsDraft:false and DataObjects.MimeType:application/pdf and DataObjects.IsOpenAccess:true and DataObjects.IsLocal:true and Year:[2015 TO *]";
             String queryEnc = HttpUtility.UrlEncode(query);
 
             jsonPublications = (GetPublications(queryEnc,
-            15000,
+            25000,
             0,
             "DataObjects.CreatedDate",
             "desc",
@@ -246,7 +269,8 @@ namespace EPlikt.Feed
                 "ValidatedDate",
                 "LatestEventDate",
                 "PublicationType.NameSwe",
-                "Persons.PersonData.DisplayName",
+                "Persons.PersonData.FirstName",
+                "Persons.PersonData.LastName",
                 "Persons.Role.NameSwe",
                 "Keywords",
                 "DataObjects"}));
